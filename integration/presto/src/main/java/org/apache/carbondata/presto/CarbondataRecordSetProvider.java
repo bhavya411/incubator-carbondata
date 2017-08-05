@@ -95,7 +95,7 @@ public class CarbondataRecordSetProvider implements ConnectorRecordSetProvider {
     fillFilter2QueryModel(queryModel, carbondataSplit.getConstraints(), targetTable);
 
     // Return new record set
-    return new CarbondataRecordSet(targetTable, session, carbondataSplit, handles.build(),
+      return new CarbondataRecordSet(targetTable, session, carbondataSplit, handles.build(),
         queryModel);
   }
 

@@ -17,6 +17,8 @@
 package org.apache.carbondata.presto;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +103,8 @@ public class CarbondataFilterUtil {
       List<Expression> disjuncts = new ArrayList<>();
       for (Range range : domain.getValues().getRanges().getOrderedRanges()) {
         if (range.isSingleValue()) {
-          singleValues.add(range.getLow().getValue());
+          Object value = ConvertDataByType(range.getLow().getValue(), type);
+          singleValues.add(value);
         } else {
           List<Expression> rangeConjuncts = new ArrayList<>();
           if (!range.getLow().isLowerUnbounded()) {
@@ -154,9 +157,9 @@ public class CarbondataFilterUtil {
         Expression ex;
         if (coltype.equals(DataType.STRING)) {
           ex = new EqualToExpression(colExpression,
-              new LiteralExpression(((Slice) singleValues.get(0)).toStringUtf8(), coltype));
+              new LiteralExpression(singleValues.get(0), coltype));
         } else if (coltype.equals(DataType.TIMESTAMP) || coltype.equals(DataType.DATE)) {
-          Long value = (Long) singleValues.get(0) * 1000;
+          Long value = (Long) singleValues.get(0) ;
           ex = new EqualToExpression(colExpression, new LiteralExpression(value, coltype));
         } else ex = new EqualToExpression(colExpression,
             new LiteralExpression(singleValues.get(0), coltype));
@@ -171,11 +174,13 @@ public class CarbondataFilterUtil {
         filters.add(new InExpression(colExpression, candidates));
       } else if (disjuncts.size() > 0) {
         if (disjuncts.size() > 1) {
-          Expression finalFilters = new OrExpression(disjuncts.get(0), disjuncts.get(1));
+          Expression finalFilters = new AndExpression(disjuncts.get(0), disjuncts.get(1));
           if (disjuncts.size() > 2) {
             for (int i = 2; i < disjuncts.size(); i++) {
               filters.add(new AndExpression(finalFilters, disjuncts.get(i)));
             }
+          } else {
+            filters.add(finalFilters);
           }
         } else if (disjuncts.size() == 1) filters.add(disjuncts.get(0));
       }
@@ -198,8 +203,22 @@ public class CarbondataFilterUtil {
   private static Object ConvertDataByType(Object rawdata, Type type) {
     if (type.equals(IntegerType.INTEGER)) return new Integer((rawdata.toString()));
     else if (type.equals(BigintType.BIGINT)) return rawdata;
-    else if (type.equals(VarcharType.VARCHAR)) return ((Slice) rawdata).toStringUtf8();
+    else if (type.equals(VarcharType.VARCHAR)) {
+      if(rawdata instanceof Slice) {
+        return ((Slice) rawdata).toStringUtf8();
+      } else {
+        return rawdata;
+      }
+
+    }
     else if (type.equals(BooleanType.BOOLEAN)) return rawdata;
+    else if (type.equals(DateType.DATE)) {
+      Calendar c = Calendar.getInstance();
+      c.setTime(new Date(0));
+      c.add(Calendar.DAY_OF_YEAR, ((Long)rawdata).intValue());
+      Date date = c.getTime();
+      return date.getTime();
+    }
 
     return rawdata;
   }

@@ -74,9 +74,8 @@ class CarbonDictionaryDecodeReadSupport[T] extends CarbonReadSupport[T] {
   def convertColumn(data: Array[AnyRef], columnNo: Int): T = {
     val convertedData = if (Option(dictionaries(columnNo)).isDefined) {
       data.map { value =>
-        DataTypeUtil
-          .getDataBasedOnDataType(dictionaries(columnNo)
-            .getDictionaryValueForKey(value.asInstanceOf[Int]), DataType.STRING)
+       dictionaries(columnNo)
+            .getDictionaryValueForKey(value.asInstanceOf[Int])
       }
     } else {
       data

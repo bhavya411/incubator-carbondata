@@ -189,4 +189,12 @@ class CarbondataRecordCursor implements RecordCursor {
     return readSupport;
   }
 
+  @Override public long getSystemMemoryUsage()
+  {
+    return totalBytes;
+  }
+
+  public void addTotalBytes(long totalBytes) {
+    this.totalBytes = totalBytes;
+  }
 }
