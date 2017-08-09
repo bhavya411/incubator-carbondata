@@ -79,6 +79,7 @@ class CarbondataPageSource implements ConnectorPageSource {
   private final AggregatedMemoryContext systemMemoryContext;
   private final StreamReader[] readers ;
   private int batchId;
+  private int noOfPages;
 
   CarbondataPageSource(RecordSet recordSet, AggregatedMemoryContext systemMemoryContext) {
     this(requireNonNull(recordSet, "recordSet is null").getColumnTypes(), recordSet.cursor(), systemMemoryContext);
@@ -192,8 +193,10 @@ class CarbondataPageSource implements ConnectorPageSource {
 
 
   @Override public Page getNextPage() {
+
     BatchResult columnBatch;
     List<Object[]> columnData;
+    noOfPages++;
     int batchSize = 0;
     try {
        batchId++;
@@ -207,20 +210,23 @@ class CarbondataPageSource implements ConnectorPageSource {
              return null;
            }
          }
+         if(columnData.size() != types.size()){
+           close();
+           return null;
+         }
        } else {
          close();
          return null;
        }
 
-       Block[] blocks = new Block[types.size()];
-       for (int column = 0; column < blocks.length; column++) {
-         Type type = types.get(column);
-         readers[column].setStreamData(columnData.get(column));
-         blocks[column] = new LazyBlock(batchSize, new CarbondataBlockLoader(column, type));
-
-       }
+       Block[] blocks = new Block[columnData.size()];
+        for (int column = 0; column < blocks.length; column++) {
+          Type type = types.get(column);
+          readers[column].setStreamData(columnData.get(column));
+          blocks[column] = new LazyBlock(batchSize, new CarbondataBlockLoader(column, type));
+        }
       Page page = new Page(batchSize, blocks);
-      sizeOfData = sizeOfData + page.getSizeInBytes();
+      sizeOfData += page.getSizeInBytes();
       return page;
      }
      catch (PrestoException e) {

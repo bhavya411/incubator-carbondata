@@ -174,7 +174,7 @@ public class CarbondataFilterUtil {
         filters.add(new InExpression(colExpression, candidates));
       } else if (disjuncts.size() > 0) {
         if (disjuncts.size() > 1) {
-          Expression finalFilters = new AndExpression(disjuncts.get(0), disjuncts.get(1));
+          Expression finalFilters = new OrExpression(disjuncts.get(0), disjuncts.get(1));
           if (disjuncts.size() > 2) {
             for (int i = 2; i < disjuncts.size(); i++) {
               filters.add(new AndExpression(finalFilters, disjuncts.get(i)));
@@ -189,7 +189,7 @@ public class CarbondataFilterUtil {
     Expression finalFilters;
     List<Expression> tmp = filters.build();
     if (tmp.size() > 1) {
-      finalFilters = new OrExpression(tmp.get(0), tmp.get(1));
+      finalFilters = new AndExpression(tmp.get(0), tmp.get(1));
       if (tmp.size() > 2) {
         for (int i = 2; i < tmp.size(); i++) {
           finalFilters = new OrExpression(finalFilters, tmp.get(i));

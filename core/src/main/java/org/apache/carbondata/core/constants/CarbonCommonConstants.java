@@ -515,7 +515,7 @@ public final class CarbonCommonConstants {
   /**
    * Default batch for data read in Columnar format
    */
-  public static final String COLUMNAR_DATA_READ_BATCH_SIZE = "4096";
+  public static final String COLUMNAR_DATA_READ_BATCH_SIZE = "32000";
 
   /**
    * LOAD_STATUS UPDATE

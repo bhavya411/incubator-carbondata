@@ -35,6 +35,9 @@ public final class StreamReaders
     } else if (javaType == long.class) {
       if(type instanceof IntegerType || type instanceof DateType) {
         return new IntegerStreamReader();
+      } else if (type instanceof DecimalType )
+      {
+        return new DecimalSliceStreamReader();
       }
       return new LongStreamReader();
     } else if (javaType == double.class) {

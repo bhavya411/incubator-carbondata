@@ -39,7 +39,11 @@ public class DecimalSliceStreamReader implements StreamReader {
     if (streamData != null) {
       for(int i = 0; i < batchSize ; i++ ){
         Slice slice = getSlice(streamData[i], type);
-        type.writeSlice(builder, parseSlice((DecimalType) type, slice, 0, slice.length()));
+        if (isShortDecimal(type)) {
+          type.writeLong(builder, parseLong((DecimalType) type, slice, 0, slice.length()));
+        } else {
+          type.writeSlice(builder, parseSlice((DecimalType) type, slice, 0, slice.length()));
+        }
       }
     }
     return builder.build();
