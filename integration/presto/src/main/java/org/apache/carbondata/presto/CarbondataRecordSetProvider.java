@@ -44,7 +44,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.TaskAttemptContextImpl;
 import org.apache.hadoop.mapred.TaskAttemptID;
-import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.TaskType;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -100,7 +99,7 @@ public class CarbondataRecordSetProvider implements ConnectorRecordSetProvider {
       JobConf jobConf = new JobConf(conf);
       CarbonTableInputFormat carbonTableInputFormat =
           createInputFormat(jobConf, tableCacheModel.carbonTable,
-              PrestoFilterUtil.getFilters(targetTable.getFactTableName().hashCode()),
+              PrestoFilterUtil.parseFilterExpression(carbondataSplit.getConstraints()),
               carbonProjection);
       TaskAttemptContextImpl hadoopAttemptContext =
           new TaskAttemptContextImpl(jobConf, new TaskAttemptID("", 1, TaskType.MAP, 0, 0));
