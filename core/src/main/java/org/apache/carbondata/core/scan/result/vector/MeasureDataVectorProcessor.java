@@ -274,8 +274,7 @@ public class MeasureDataVectorProcessor {
           if (decimal.scale() < newMeasureScale) {
             decimal = decimal.setScale(newMeasureScale);
           }
-          Decimal toDecimal = org.apache.spark.sql.types.Decimal.apply(decimal);
-          vector.putDecimal(vectorOffset, toDecimal, precision);
+          vector.putDecimal(vectorOffset, decimal, precision);
         }
         vectorOffset++;
       }
@@ -300,7 +299,7 @@ public class MeasureDataVectorProcessor {
             decimal = decimal.setScale(info.measure.getMeasure().getScale());
           }
           Decimal toDecimal = Decimal.apply(decimal);
-          vector.putDecimal(vectorOffset, toDecimal, precision);
+          vector.putDecimal(vectorOffset, decimal, precision);
         }
         vectorOffset++;
       }
