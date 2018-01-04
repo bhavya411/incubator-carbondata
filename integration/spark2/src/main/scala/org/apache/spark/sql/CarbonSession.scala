@@ -163,10 +163,17 @@ object CarbonSession {
           if (!sparkConf.contains("spark.app.name")) {
             sparkConf.setAppName(randomAppName)
           }
+          sparkConf.set("fs.s3n.awsAccessKeyId","AKIAJSBDCWCUXBO5AHFA")
+          sparkConf.set("fs.s3n.awsSecretAccessKey","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")
+          sparkConf.set("fs.s3.awsAccessKeyId","AKIAJSBDCWCUXBO5AHFA")
+          sparkConf.set("fs.s3.awsSecretAccessKey","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")
           val sc = SparkContext.getOrCreate(sparkConf)
-          FileFactory.getConfiguration.set(ACCESS_KEY, sc.hadoopConfiguration.get(ACCESS_KEY, ""))
-          FileFactory.getConfiguration.set(SECRET_KEY, sc.hadoopConfiguration.get(SECRET_KEY, ""))
-
+          FileFactory.getConfiguration.set(ACCESS_KEY, sc.conf.get(ACCESS_KEY, ""))
+          FileFactory.getConfiguration.set(SECRET_KEY, sc.conf.get(SECRET_KEY, ""))
+          FileFactory.getConfiguration.set("fs.s3n.awsAccessKeyId", sc.conf.get(ACCESS_KEY, ""))
+          FileFactory.getConfiguration.set("fs.s3n.awsSecretAccessKey", sc.conf.get(SECRET_KEY, ""))
+          FileFactory.getConfiguration.set("fs.s3.awsAccessKeyId", sc.conf.get(ACCESS_KEY, ""))
+          FileFactory.getConfiguration.set("fs.s3.awsSecretAccessKey", sc.conf.get(SECRET_KEY, ""))
           // maybe this is an existing SparkContext, update its SparkConf which maybe used
           // by SparkSession
           options.foreach { case (k, v) => sc.conf.set(k, v) }

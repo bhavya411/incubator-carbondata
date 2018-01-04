@@ -50,12 +50,12 @@ object S3Example {
       .appName("CarbonSessionExample")
       .config("spark.sql.warehouse.dir", warehouse)
       .config("spark.driver.host", "localhost")
-      .config(ACCESS_KEY, "*****************")
-      .config(SECRET_KEY, "***************************")
+      .config(ACCESS_KEY, "AKIAJSBDCWCUXBO5AHFA")
+      .config(SECRET_KEY, "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")
       .getOrCreateCarbonSession(storeLocation, warehouse)
 
     spark.sparkContext.setLogLevel("INFO")
-    spark.sql("CREATE DATABASE if not exists s3carbondemo LOCATION 's3a://<bucketName>/s3carbondemo'")
+    spark.sql("CREATE DATABASE if not exists s3carbondemo LOCATION 's3://s3-carbon/testdb2'")
 
     spark.sql(
       s"""

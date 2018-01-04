@@ -56,7 +56,9 @@ public class CarbonLockFactory {
     String tablePath = absoluteTableIdentifier.getTablePath();
     if (lockTypeConfigured.equals(CarbonCommonConstants.CARBON_LOCK_TYPE_ZOOKEEPER)) {
       return new ZooKeeperLocking(absoluteTableIdentifier, lockFile);
-    } else if (tablePath.startsWith(CarbonCommonConstants.S3A_PREFIX)) {
+    } else if (tablePath.startsWith(CarbonCommonConstants.S3A_PREFIX)
+        || tablePath.startsWith(CarbonCommonConstants.S3N_PREFIX)
+        || tablePath.startsWith(CarbonCommonConstants.S3_PREFIX)) {
       lockTypeConfigured = CarbonCommonConstants.CARBON_LOCK_TYPE_S3;
       return new S3FileLock(absoluteTableIdentifier, lockFile);
     } else if (tablePath.startsWith(CarbonCommonConstants.HDFSURL_PREFIX)) {

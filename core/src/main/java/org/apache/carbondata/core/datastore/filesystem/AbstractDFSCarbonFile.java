@@ -262,7 +262,17 @@ public abstract  class AbstractDFSCarbonFile implements CarbonFile {
       // append to a file only if file already exists else file not found
       // exception will be thrown by hdfs
       if (CarbonUtil.isFileExists(path)) {
-        stream = fs.append(pt, bufferSize);
+        if(FileFactory.FileType.S3 == fileType) {
+          DataInputStream dis = fs.open(pt);
+          int count = dis.available();
+          // create buffer
+          byte[] bs = new byte[count];
+          dis.read(bs);
+          stream = fs.create(pt, true, bufferSize);
+          stream.write(bs);
+        } else {
+          stream = fs.append(pt, bufferSize);
+        }
       } else {
         stream = fs.create(pt, true, bufferSize);
       }
